@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 # Copyright 2010 Google Inc.
@@ -46,39 +46,58 @@ columns, so the output looks better.
 import random
 import sys
 
-__author__ = "???"
+__author__ = "Patrick Buzzo"
 
 
 def create_mimic_dict(filename):
-    """Returns mimic dict mapping each word to list of words which follow it.
-    For example:
-        Input: "I am a software developer, and I don't care who knows"
-        Output:
-            {
-                "" : ["I"],
-                "I" : ["am", "don't"],
-                "am": ["a"],
-                "a": ["software"],
-                "software" : ["developer,"],
-                "developer," : ["and"],
-                "and" : ["I"],
-                "don't" : ["care"],
-                "care" : ["who"],
-                "who" : ["knows"]
-            }
-    """
-    # +++your code here+++
+    counter = {}
+    last_char = ''
+    with open(filename, 'r') as f:
+        for line in f:
+            single_words = line.split()
+            for word in single_words:
+                if word[-1] == ",":
+                    word = word[:-1]
+                if last_char in counter:
+                    counter[last_char].append(
+                        word.lower())
+                else:
+                    if last_char:
+                        counter[last_char] = [word]
+                    elif not last_char:
+                        counter[last_char] = [word]
+                last_char = word
+    mimic_dict = counter
+    return mimic_dict
 
 
 def print_mimic(mimic_dict, start_word):
-    """Given a previously compiled mimic_dict and start_word, prints 200 random words:
-        - Print the start_word
-        - Lookup the start_word in your mimic_dict and get it's next-list
-        - Randomly select a new word from the next-list
-        - Repeat this process 200 times
+    new_word_list = []
+    values_list = []
+    keys = mimic_dict.keys()
+    values = mimic_dict.values()
+    for i in keys:
+        if start_word == i:
+            next_list = mimic_dict[i][0]
+            # use random.choice() or new build list of values and do
+            # radint.random()
+            # https://pynative.com/python-random-choice/
+            new_word_list.append(random.choice(next_list))
+    for i in values:
+        values_list.append(i)
+        # see tuple manipulation
+        # https://www.tutorialspoint.com/python/python_tuples.htm
+    while len(new_word_list) < 100:
+        new_word_list.append(random.choice(values_list))
+    print new_word_list
+
     """
-    # +++your code here+++
-    pass
+    Resources:
+    https://docs.python.org/2/howto/sorting.html
+    https://www.tutorialspoint.com/How-to-iterate-through-a-dictionary-in-Python
+    https://thispointer.com/python-how-to-get-last-n-characters-in-a-string/
+    https://www.pythonforbeginners.com/random/how-to-use-the-random-module-in-python
+    """
 
 
 # Provided main(), calls mimic_dict() and mimic()
